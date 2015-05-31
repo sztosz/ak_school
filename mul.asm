@@ -4,10 +4,26 @@ section .text
 _start:
   pop eax         ; getting argc (argument count)
   pop ebx         ; getting argv[0] (program name)
-  pop edx         ; getting first opperand
+  pop edx         ; getting first opperand string
   mov edi, edx    ; move first operand string to edi
   call str_len    ; getting lenght of string
-  call print_digit_from_ecx
+  ; add ecx, 48     ; adding 48 to get ascii value of digit  
+  print_loop:
+    mov dword [counter], ecx  ; store lenght in counter (could use stack!)
+    mov ecx, [edx]            ; get first char to ecx
+    inc edx                   ; get next char adress into edx
+    push edx                  ; push edx to stack
+    call print_value_of_ecx   ; print ecx value
+    pop edx                   ; pop from stack to edx
+    mov dword ecx, [counter]  ; restore counter value (could use stack!)
+    loop print_loop
+
+  ; mov edx, 1             ; setting lenght of printed string (one digit + one line terminator)
+  ; mov eax, 4             ; system call for write (sys_write)
+  ; mov ebx, 1             ; name of file (1 is for standard output)
+  ; int 80h
+
+  
   ; pop edx         ; getting second operand
 
 ; mul_loop:       ; loop lable
@@ -41,8 +57,7 @@ str_len:
         dec ecx           ; now we got in ecx strlen
         ret               ; return from subprocedure
 
-print_digit_from_ecx:
-        add ecx, 48            ; adding 48 to get ascii value of digit
+print_value_of_ecx:            ; prints exact value of ecx as ascii
         mov dword [msg], ecx   ; moving value to memory location at msg
         mov dword [msg+1], 0xa ; adding line terminatior to msg
         mov ecx, msg           ; geting memory adress of msg to ecx
@@ -52,6 +67,9 @@ print_digit_from_ecx:
         int 80h                ; calling kernel
         ret
 
-section .bss
-  msg: resd 2
+convert_string_to_digit:
 
+section .bss
+  msg: resd 2     ; 2 dword's for message to print
+  counter resd 1  ; 1 dword to store how many digits we have for loop use
+  ; mem_adrs resd 1 ; 1 dword to store memmory adress
