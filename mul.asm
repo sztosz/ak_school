@@ -109,6 +109,7 @@ print_int_as_str:           ; eax shoudl have int we want to print
   div dword [const10]       ; dividing eax by const10 value wchis is 10. eax gets quotient, and edx remainder
   test eax, eax             ; testing if quotient is equal to 0  
   je print_digit            ; if quotient is equal to 0 jump to print
+  call print_int_as_str     ; else get back to dividing untill we get 0 in above step
   print_digit:
     ; mov ecx, [edx+'0']    ; moving edx (the remainder of division) to ecx to print it
     add edx, 48             ; add 48 to get ascii value
