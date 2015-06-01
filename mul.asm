@@ -91,7 +91,7 @@ mul_loop:         ; loop lable counter (multiplier) is in ecx, multiplicand in e
   ; call str_len              ; getting lenght to ecx
 convert_string_to_int:      ; string start in edi, eax should be set to 0, and ecx should have string lenght!!!
   push ecx                  ; storing ecx (counter loop) at stack
-  mov ecx, 10               ; preapering counter (multiplier) for mul_loop
+  mov ecx, 9                ; preapering counter (multiplier) for mul_loop (we need to loop 9 times x * 10 = x + 9 * x, we have already x * 1 in registry)
   mov edx, eax              ; move multiplicand to edx
   call mul_loop             ; multiplying edx by ecx and storing result in eax
   movzx edx, byte [edi]     ; get char from string to edx and convert it to proper type (zero extend)
@@ -99,7 +99,6 @@ convert_string_to_int:      ; string start in edi, eax should be set to 0, and e
   add eax, edx              ; adding value of edx int to result we keep in eax 
   pop ecx                   ; get ecx value from stack
   inc edi                   ; increment edi to get next char ready for processing
-  inc edi
   loop convert_string_to_int; loop to get other next digit in string
   ret
 
@@ -111,9 +110,10 @@ print_int_as_str:           ; eax shoudl have int we want to print
   test eax, eax             ; testing if quotient is equal to 0  
   je print_digit            ; if quotient is equal to 0 jump to print
   print_digit:
-    ; mov ecx, [edx+'0']      ; moving edx (the remainder of division) to ecx to print it
-    mov ecx, edx      ; moving edx (the remainder of division) to ecx to print it
-    mov edx, 2              ; setting lenght of printed string (two digit + one line terminator)
+    ; mov ecx, [edx+'0']    ; moving edx (the remainder of division) to ecx to print it
+    mov ecx, edx            ; moving edx (the remainder of division) to ecx to print it
+    add ecx, 48             ; add 48 to get ascii value
+    mov edx, 1              ; setting lenght of printed string (two digit + one line terminator)
     mov eax, 4              ; system call for write (sys_write)
     mov ebx, 1              ; name of file (1 is for standard output)
     int 80h                 ; calling kernel
