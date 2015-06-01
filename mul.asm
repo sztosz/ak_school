@@ -5,35 +5,16 @@ _start:
   pop eax                   ; getting argc (argument count)
   pop ebx                   ; getting argv[0] (program name)
   pop edi                   ; getting first opperand string
-    ; mov ecx, edi
-    ; mov edx, 2              ; setting lenght of printed string (two digit + one line terminator)
-    ; mov eax, 4              ; system call for write (sys_write)
-    ; mov ebx, 1              ; name of file (1 is for standard output)
-    ; int 80h                 ; calling kernel
-
-    ; pop edi
-    ; mov ecx, edi
-    ; mov edx, 2              ; setting lenght of printed string (two digit + one line terminator)
-    ; mov eax, 4              ; system call for write (sys_write)
-    ; mov ebx, 1              ; name of file (1 is for standard output)
-    ; int 80h                 ; calling kernel
-
-
-  ; mov edi, edx              ; move first operand string to edi
+  mov ebx, edi
   call str_len              ; getting lenght of string
+  mov edi, ebx
   xor eax, eax              ; zeroing eax
   call convert_string_to_int; converting, eax has now int we want
   pop edi                   ; getting second opperand string
-
-  ; mov ecx, edi
-  ; mov edx, 1             ; setting lenght of printed string (one digit + one line terminator)
-  ; mov eax, 4             ; system call for write (sys_write)
-  ; mov ebx, 1             ; name of file (1 is for standard output)
-  ; int 80h
-
-
+  mov ebx, edi
   push eax                  ; storing first operand int to stack
   call str_len              ; getting lenght of string
+  mov edi, ebx
   xor eax, eax              ; zeroing eax
   call convert_string_to_int; converting, eax has now int we want
   pop edx                   ; get multiplier we stored into edx
@@ -118,6 +99,7 @@ convert_string_to_int:      ; string start in edi, eax should be set to 0, and e
   add eax, edx              ; adding value of edx int to result we keep in eax 
   pop ecx                   ; get ecx value from stack
   inc edi                   ; increment edi to get next char ready for processing
+  inc edi
   loop convert_string_to_int; loop to get other next digit in string
   ret
 
@@ -129,7 +111,8 @@ print_int_as_str:           ; eax shoudl have int we want to print
   test eax, eax             ; testing if quotient is equal to 0  
   je print_digit            ; if quotient is equal to 0 jump to print
   print_digit:
-    mov ecx, [edx+'0']      ; moving edx (the remainder of division) to ecx to print it
+    ; mov ecx, [edx+'0']      ; moving edx (the remainder of division) to ecx to print it
+    mov ecx, edx      ; moving edx (the remainder of division) to ecx to print it
     mov edx, 2              ; setting lenght of printed string (two digit + one line terminator)
     mov eax, 4              ; system call for write (sys_write)
     mov ebx, 1              ; name of file (1 is for standard output)
@@ -141,6 +124,8 @@ print_int_as_str:           ; eax shoudl have int we want to print
 section .bss
   msg: resd 2     ; 2 dword's for message to print
   counter resd 1  ; 1 dword to store how many digits we have for loop use
-  ; mem_adrs resd 1 ; 1 dword to store memmory adress
+  ; 1_op resb 10    ; 10 bytes to store first operand
+  ; 2_op resb 10    ; 10 bytes to store second operand
+
 section .data
   const10 dd 10     ; integer 10 stored in dword
