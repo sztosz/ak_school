@@ -111,8 +111,10 @@ print_int_as_str:           ; eax shoudl have int we want to print
   je print_digit            ; if quotient is equal to 0 jump to print
   print_digit:
     ; mov ecx, [edx+'0']    ; moving edx (the remainder of division) to ecx to print it
-    mov ecx, edx            ; moving edx (the remainder of division) to ecx to print it
-    add ecx, 48             ; add 48 to get ascii value
+    add edx, 48             ; add 48 to get ascii value
+    mov dword [msg], edx   ; moving value to memory location at msg
+    mov ecx, msg           ; geting memory adress of msg to ecx
+    ; mov ecx, edx            ; moving edx (the remainder of division) to ecx to print it
     mov edx, 1              ; setting lenght of printed string (two digit + one line terminator)
     mov eax, 4              ; system call for write (sys_write)
     mov ebx, 1              ; name of file (1 is for standard output)
@@ -122,7 +124,7 @@ print_int_as_str:           ; eax shoudl have int we want to print
     ret                     ; return from subprocedure
 
 section .bss
-  msg: resd 2     ; 2 dword's for message to print
+  msg: resd 1     ; 2 dword's for message to print
   counter resd 1  ; 1 dword to store how many digits we have for loop use
   ; 1_op resb 10    ; 10 bytes to store first operand
   ; 2_op resb 10    ; 10 bytes to store second operand
